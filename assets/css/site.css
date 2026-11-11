@@ -163,23 +163,24 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
    ========================================================= */
 .app--tint { background: var(--paper-2); }
 .intro {
-  flex: 1; display: flex; flex-direction: column; min-height: 0;
+  flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0;
+  padding-top: calc(64px + env(safe-area-inset-top));
   background: radial-gradient(120% 70% at 50% 42%, color-mix(in srgb, var(--paper) 55%, var(--paper-2)) 0%, var(--paper-2) 70%);
 }
 .intro__visual {
   position: relative;
-  flex: 1;
+  flex: none;
   min-height: 0;
   margin: 0;
   background: none;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
-  padding: calc(72px + env(safe-area-inset-top) + 8px) 16px 104px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  padding: 0 16px;
   overflow: hidden;
 }
 .cycle {
   position: relative;
-  width: min(100%, 380px, calc(100svh - 330px));
-  min-width: 240px;
+  width: min(100%, 390px, calc(100svh - 370px));
+  min-width: 250px;
   aspect-ratio: 1;
 }
 .cycle svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -228,7 +229,8 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .cycle .orb.on img { transform: scale(1.04); }
 
 .cycle__legend {
-  position: absolute; left: 0; right: 0; bottom: 72px; margin: 0;
+  order: 1;
+  margin: 0;
   display: flex; justify-content: center; gap: 16px;
   font-size: 11.5px; color: var(--mute);
 }
@@ -246,8 +248,7 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 
 .intro__foot {
   position: relative;
-  margin-top: -56px;
-  padding: 0 var(--pad) calc(18px + env(safe-area-inset-bottom));
+  padding: 26px var(--pad) calc(10px + env(safe-area-inset-bottom));
   text-align: center;
 }
 .intro__foot h1 { margin: 0 0 6px; font-size: 20px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.35; }
@@ -463,8 +464,8 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 /* 낮은 화면(가로 휴대폰 등) */
 @media (max-height: 600px) {
   .app--screen { height: auto; min-height: 100svh; }
-  .intro__visual { flex: none; padding-block: 80px 44px; }
-  .cycle { width: 280px; }
+  .intro { padding-bottom: 20px; }
+  .cycle { width: 270px; }
 }
 
 /* =========================================================
