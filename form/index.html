@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>오행 확인 | TEUM POTTERY</title>
+<meta name="description" content="이름, 생년월일, 태어난 시간으로 나의 오행을 확인합니다.">
+<meta property="og:title" content="오행 확인 | TEUM POTTERY">
+<meta property="og:description" content="이름, 생년월일, 태어난 시간으로 나의 오행을 확인합니다.">
+<meta property="og:image" content="../assets/img/hero.jpg">
+<meta name="theme-color" content="#f3f3f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/img/logo-mark.svg" type="image/svg+xml">
+<link rel="preload" href="../assets/fonts/hanja-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/css/site.css?v=1794397052">
+</head>
+<body data-page="form" data-base="../">
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="app">
+  <header class="bar">
+    <a class="bar__back" href="../" aria-label="처음으로"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M15 8H2M6.5 3.5 2 8l4.5 4.5"/></svg></a>
+    <img class="logo-mark" src="../assets/img/logo-mark.svg" alt="TEUM POTTERY" width="23" height="23">
+    <span class="bar__space" aria-hidden="true"></span>
+  </header>
+
+  <main id="main" class="page">
+    <div class="page__head">
+      <h1>내 오행 알아보기</h1>
+      <p>네 가지만 입력하면 됩니다.</p>
+    </div>
+
+    <form class="form" id="oheng-form" novalidate>
+      <div class="field">
+        <label class="field__label" for="name">이름</label>
+        <input class="input" id="name" name="name" type="text" autocomplete="name" maxlength="20" placeholder="홍길동" aria-describedby="name-error" spellcheck="false" enterkeyhint="next">
+        <p class="field__error" id="name-error" role="alert"></p>
+      </div>
+
+      <fieldset class="field field--set">
+        <legend class="field__label">달력 기준</legend>
+        <div class="seg">
+          <input type="radio" name="cal" id="cal-s" value="s" checked><label for="cal-s">양력</label>
+          <input type="radio" name="cal" id="cal-l" value="l"><label for="cal-l">음력</label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <div class="field__row">
+          <label class="field__label" for="birth">생년월일</label>
+          <label class="check" id="leap-wrap" hidden><input type="checkbox" id="leap" name="leap">윤달</label>
+        </div>
+        <input class="input" id="birth" name="birth" type="text" inputmode="numeric" autocomplete="bday" maxlength="8" placeholder="19890123" aria-describedby="birth-hint birth-error" spellcheck="false" enterkeyhint="next">
+        <p class="field__hint" id="birth-hint" aria-live="polite"></p>
+        <p class="field__error" id="birth-error" role="alert"></p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="time">태어난 시간</label>
+        <div class="select-wrap">
+          <select class="select" id="time" name="time" aria-describedby="time-error">
+            <option value="" selected disabled>시간 선택</option>
+            <option value="-1">모름 (시간 빼고 분석)</option>
+          </select>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg>
+        </div>
+        <p class="field__error" id="time-error" role="alert"></p>
+      </div>
+
+      <p class="info">입력한 정보는 오행 분석에만 쓰이며 저장되지 않습니다.</p>
+
+      <div class="cta">
+        <button class="btn btn--block" type="submit">분석 시작하기<svg class="arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 8h13M9.5 3.5 14 8l-4.5 4.5"/></svg></button>
+      </div>
+    </form>
+  </main>
+</div>
+<script src="../assets/js/lunar.min.js?v=1794393887"></script>
+<script src="../assets/js/data.js?v=1794394097"></script>
+<script src="../assets/js/site.js?v=1794397052"></script>
+</body>
+</html>
