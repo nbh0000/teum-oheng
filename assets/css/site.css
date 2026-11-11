@@ -165,7 +165,7 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .app--tint { background: var(--paper-2); }
 .intro {
   flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0;
-  padding-top: calc(64px + clamp(8px, 4svh, 40px) + env(safe-area-inset-top));
+  padding-top: calc(20px + env(safe-area-inset-top));
   background: radial-gradient(120% 70% at 50% 42%, color-mix(in srgb, var(--paper) 55%, var(--paper-2)) 0%, var(--paper-2) 70%);
 }
 .intro__visual {
