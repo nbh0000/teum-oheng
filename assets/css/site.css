@@ -123,7 +123,7 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .app--tint .bar .logo-mark { width: 38px; height: 38px; }
 .app--tint .bar .logo-word { width: 150px; }
 .app--tint .bar .brand { gap: 12px; }
-.app--tint .bar { height: calc(72px + env(safe-area-inset-top)); position: absolute; left: 0; right: 0; justify-content: center; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.app--tint .bar { height: calc(72px + env(safe-area-inset-top)); position: absolute; top: clamp(8px, 4svh, 40px); left: 0; right: 0; justify-content: center; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
 .bar__back, .bar__space { width: 36px; height: 36px; margin-left: -8px; display: grid; place-items: center; color: var(--ink); }
 .bar__space { margin: 0 -8px 0 0; }
@@ -164,7 +164,7 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .app--tint { background: var(--paper-2); }
 .intro {
   flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0;
-  padding-top: calc(64px + env(safe-area-inset-top));
+  padding-top: calc(64px + clamp(8px, 4svh, 40px) + env(safe-area-inset-top));
   background: radial-gradient(120% 70% at 50% 42%, color-mix(in srgb, var(--paper) 55%, var(--paper-2)) 0%, var(--paper-2) 70%);
 }
 .intro__visual {
