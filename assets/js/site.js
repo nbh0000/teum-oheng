@@ -459,20 +459,67 @@
     return out;
   }
 
+  var ROLE = {
+    self: { name: "비겁", mean: "나 자신과 곁의 동료", lack: "혼자 버티는 일이 많아 쉽게 지치기 쉽습니다. 믿을 만한 사람과 힘을 나눌수록 단단해집니다." },
+    parent: { name: "인성", mean: "배움과 도움, 나를 받쳐 주는 힘", lack: "배운 것을 내 것으로 만들 여유가 부족해지기 쉽습니다. 쉬어 가며 채우는 시간이 힘이 됩니다." },
+    child: { name: "식상", mean: "표현과 재능, 내가 만들어 내는 것", lack: "생각을 밖으로 꺼내는 데 망설임이 생기기 쉽습니다. 작게라도 만들고 드러내는 연습이 도움이 됩니다." },
+    wealth: { name: "재성", mean: "재물과 결과, 손에 잡히는 현실", lack: "애쓴 만큼 결과로 이어지지 않는다고 느끼기 쉽습니다. 돈과 시간을 구체적으로 정리하는 습관이 도움이 됩니다." },
+    officer: { name: "관성", mean: "책임과 명예, 일과 자리", lack: "정해진 틀과 책임 앞에서 흔들리기 쉽습니다. 작은 약속부터 지키는 리듬이 힘이 됩니다." }
+  };
+
+  function levelOf(p) { return p <= 5 ? "부족" : p < 13 ? "약함" : p < 24 ? "보통" : p < 34 ? "강함" : "과다"; }
+
   function render(main, name, r) {
     var inp = r.input;
     var base = document.body.getAttribute("data-base") || "../";
     var birth = (r.cal === "l" ? "음력 " + (inp.leap ? "윤" : "") : "양력 ") + inp.y + "." + pad(inp.m) + "." + pad(inp.d);
     var other = r.cal === "l" ? " (양력 " + r.solar.getYear() + "." + pad(r.solar.getMonth()) + "." + pad(r.solar.getDay()) + ")" : "";
     var time = r.known ? r.sijin.ko + " " + r.sijin.range : "태어난 시간 모름";
-    var P = D.EL[r.primary];
+    var P = D.EL[r.primary], PL = P.ko + '<span class="hj" lang="zh-Hant">(' + P.hz + ")</span>";
     var html = "";
 
-    /* 1. 머리 + 사주 원국 */
-    html += '<section class="reveal" aria-labelledby="r-title"><div class="r-head">' +
-      '<h1 id="r-title" class="fit">' + esc(name) + "님에게 필요한 기운은 " + P.ko + '<span lang="zh-Hant">(' + P.hz + ")</span></h1>" +
-      '<p class="birth">' + birth + other + ", " + time + "</p></div>" +
-      '<div class="pillars" role="group" aria-label="사주 여덟 글자">';
+    /* 머리 */
+    html += '<div class="r-head reveal"><h1 id="r-title" class="fit">' + esc(name) + "님에게 필요한 기운은 " + PL + "</h1>" +
+      '<p class="birth">' + birth + other + ", " + time + "</p></div>";
+
+    /* 1. 대표 패널 */
+    html += '<section class="panel panel--hero reveal" style="--c:' + P.hex + '" aria-label="가장 필요한 기운">' +
+      '<div class="hero__top"><img class="hero__card" src="' + base + "assets/img/card-" + r.primary + '.webp" alt="' + P.ko + "(" + P.hz + ") 카드" + '" width="990" height="1485">' +
+      '<div class="hero__txt"><p class="hero__hz" lang="zh-Hant">' + P.hz + '</p><p class="hero__kw">' + P.kw + '</p><p class="hero__en">' + P.kwEn + "</p></div></div>" +
+      '<p class="hero__msg"><b>' + esc(name) + "</b>님에게 지금 가장 필요한 건<br><b>" + P.ko + "(" + P.hz + ")의 기운</b>입니다. " + P.short + ".</p>" +
+      '<ul class="tags">' + P.tags.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul></section>";
+
+    /* 2. 오행 밸런스 */
+    html += '<section class="panel reveal" aria-labelledby="bal-title"><h2 class="panel__title" id="bal-title">오행 밸런스</h2><ul class="bal">';
+    var maxPct = Math.max.apply(null, D.ORDER.map(function (k) { return r.pct[k]; })) || 1;
+    D.ORDER.forEach(function (k) {
+      var e = D.EL[k], isP = k === r.primary;
+      var lv = isP ? (r.count[k] === 0 ? "없음" : "부족") : levelOf(r.pct[k]);
+      html += '<li class="' + (isP ? "is-low" : "") + '" style="--c:' + e.hex + '">' +
+        '<span class="bal__dot" lang="zh-Hant"' + (k === "water" ? ' data-dark' : "") + ">" + e.hz + "</span>" +
+        '<span class="bal__bar" aria-hidden="true"><i style="--w:' + Math.max(3, Math.round(r.pct[k] / maxPct * 100)) + '%"></i></span>' +
+        '<span class="bal__n">' + r.count[k] + "개</span>" +
+        '<span class="bal__lv">' + lv + "</span></li>";
+    });
+    html += '</ul><p class="tip"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 9.4 6.6 14.5 8 9.4 9.4 8 14.5 6.6 9.4 1.5 8 6.6 6.6Z" fill="currentColor"/></svg>' +
+      P.ko + "(" + P.hz + ")의 기운이 채워지면 " + P.benefit + ".</p></section>";
+
+    /* 3. 나와의 관계 */
+    var roleKey = r.primary === r.me ? "self" : r.primary === r.roles.parent ? "parent" : r.primary === r.roles.child ? "child" : r.primary === r.roles.wealth ? "wealth" : "officer";
+    var role = ROLE[roleKey], me = D.EL[r.me];
+    var levelKo = { strong: "신강", balanced: "중화", weak: "신약" }[r.level];
+    var x = Math.min(96, Math.max(4, r.support));
+    html += '<section class="panel reveal" aria-labelledby="me-title"><h2 class="panel__title" id="me-title">나에게 이 기운이 뜻하는 것</h2>' +
+      '<div class="me">' +
+      '<div class="me__row"><span class="me__k">나를 뜻하는 글자</span><span class="me__v"><b lang="zh-Hant">' + r.dayMaster + "</b> " + D.GAN_KO[r.dayMaster] + ", " + me.ko + "(" + me.hz + ")</span></div>" +
+      '<div class="me__row"><span class="me__k">' + P.ko + "(" + P.hz + ")의 의미</span><span class=\"me__v\">" + role.mean + " <small>" + role.name + "</small></span></div>" +
+      '<div class="me__row"><span class="me__k">일간의 힘</span><span class="me__v">' + levelKo + " <small>돕는 기운 " + r.support + "%</small></span></div>" +
+      '<div class="scale" style="--x:' + x + '%" aria-hidden="true"><i></i></div>' +
+      '<div class="scale-labels" aria-hidden="true"><span>신약</span><span>중화</span><span>신강</span></div></div>' +
+      '<p class="panel__text">' + esc(name) + "님에게 " + P.ko + "(" + P.hz + ")" + (jong(P.ko) ? "은 " : "는 ") + role.mean + (jong(role.mean) ? "을" : "를") + " 뜻합니다. " + role.lack + "</p></section>";
+
+    /* 4. 사주 원국 */
+    html += '<section class="panel" aria-labelledby="pil-title"><h2 class="panel__title" id="pil-title">사주 여덟 글자</h2><div class="pillars" role="group" aria-label="사주 여덟 글자">';
     r.pillars.forEach(function (pl) {
       html += '<div class="pillar"><div class="pillar__name">' + pl.label + "주</div>";
       if (pl.chars) {
@@ -484,71 +531,28 @@
       }
       html += "</div>";
     });
-    html += "</div></section>";
+    html += '</div><p class="note">세력은 천간 1, 지지는 지장간 비율(본기 60, 중기 30, 여기 10), 태어난 달은 두 배로 계산합니다.</p></section>';
 
-    /* 2. 분포 + 일간 강약 */
-    var maxPct = Math.max.apply(null, D.ORDER.map(function (k) { return r.pct[k]; })) || 1;
-    html += '<section class="block reveal" aria-labelledby="dist-title" style="margin-top:26px"><h2 class="block__title" id="dist-title">다섯 기운의 분포</h2>' +
-      '<p class="dist__sum">많은 기운 <b>' + r.high.map(label).join(", ") + "</b>, 부족한 기운 <b>" + r.low.map(label).join(", ") + "</b></p>" +
-      '<ul class="dist">';
-    D.ORDER.forEach(function (k) {
-      var e = D.EL[k], n = r.count[k], isLow = r.low.indexOf(k) > -1, isHigh = r.high.indexOf(k) > -1;
-      var h = Math.round(r.pct[k] / maxPct * 100);
-      html += '<li style="--c:' + e.hex + '" class="' + (isLow ? "is-low" : isHigh ? "is-high" : "") + '" aria-label="' + e.ko + " " + n + "개, 세력 " + Math.round(r.pct[k]) + '%">' +
-        '<span class="pct">' + Math.round(r.pct[k]) + "%</span>" +
-        '<span class="meter" aria-hidden="true"><i style="--h:' + Math.max(2, h) + '%"></i></span>' +
-        '<span class="hz" lang="zh-Hant">' + e.hz + "</span>" +
-        '<span class="nm">' + e.ko + " " + n + "개</span>" +
-        '<span class="tag">' + (isLow ? (n === 0 ? "없음" : "부족") : isHigh ? "많음" : "") + "</span></li>";
-    });
-    html += "</ul>";
+    /* 5. 채우는 방법 */
+    html += '<section class="panel" aria-labelledby="how-title"><h2 class="panel__title" id="how-title">' + P.ko + "(" + P.hz + ")" + (jong(P.ko) ? "을" : "를") + " 채우는 방법</h2>" +
+      '<dl class="facts">' +
+      "<div><dt>색</dt><dd>" + P.color + "</dd></div>" +
+      "<div><dt>방향</dt><dd>" + P.direction + "</dd></div>" +
+      "<div><dt>계절</dt><dd>" + P.season + "</dd></div>" +
+      "<div><dt>생활 습관</dt><dd>" + P.habit + "</dd></div></dl>" +
+      (r.low.length > 1 ? '<p class="note">' + r.low.slice(1).map(label).join(", ") + "도 함께 부족합니다. 아래 '다른 오행 함께 채우기'에서 볼 수 있습니다.</p>" : "") +
+      "</section>";
 
-    var me = D.EL[r.me];
-    var levelKo = { strong: "신강", balanced: "중화", weak: "신약" }[r.level];
-    var levelText = {
-      strong: "나를 돕는 기운이 강해 추진력이 좋지만 한쪽으로 몰리기 쉽습니다. " + label(r.helper) + "의 기운이 균형을 잡아 줍니다.",
-      balanced: "돕는 기운과 쓰는 기운이 고르게 섞여 있습니다. 모자란 기운만 조금씩 더하면 됩니다.",
-      weak: "나를 돕는 기운이 약해 쉽게 지치거나 흔들릴 수 있습니다. " + label(r.helper) + "의 기운이 힘이 됩니다."
-    }[r.level];
-    var x = Math.min(96, Math.max(4, r.support));
-    html += '<div class="strength">' +
-      "<div><h3>나를 뜻하는 글자</h3>" +
-      '<p class="big"><b lang="zh-Hant">' + r.dayMaster + "</b>(" + D.GAN_KO[r.dayMaster] + "), " + me.ko + "(" + me.hz + ")의 사람</p>" +
-      "<p>" + esc(me.short) + "을 타고났습니다.</p></div>" +
-      "<div><h3>일간의 힘</h3>" +
-      '<p class="big">' + levelKo + "<small>돕는 기운 " + r.support + "%" + (r.deukryeong ? ", 월령을 얻음" : "") + "</small></p>" +
-      '<div class="scale" style="--x:' + x + '%" aria-hidden="true"><i></i></div>' +
-      '<div class="scale-labels" aria-hidden="true"><span>신약</span><span>중화</span><span>신강</span></div>' +
-      "<p>" + levelText + "</p></div></div>" +
-      '<p class="note">천간 1, 지지는 지장간 비율(본기 60, 중기 30, 여기 10), 태어난 달은 두 배로 계산합니다.</p></section>';
-
-    /* 3. 채우면 좋은 기운 */
-    html += '<section class="block" aria-labelledby="need-title"><h2 class="block__title" id="need-title">' +
-      (r.low.length > 1 ? "채우면 좋은 기운 " + NUM_KO[r.low.length] + " 가지" : "채우면 좋은 기운") + "</h2>";
-    r.low.forEach(function (k) {
-      var e = D.EL[k];
-      html += '<article class="need" aria-label="' + e.ko + ' 기운">' +
-        '<figure class="need__media need__media--card"><img src="' + base + "assets/img/card-" + k + '.webp" alt="' + e.ko + "(" + e.hz + ") 카드, " + e.kw + ", " + e.short + '" width="990" height="1485" loading="lazy" decoding="async"></figure>' +
-        '<p class="need__title"><b lang="zh-Hant">' + e.hz + "</b><span>" + e.ko + '</span><span class="need__kw">' + e.kw + "</span></p>" +
-        '<p class="need__en" style="--c:' + e.hex + '">' + e.kwEn + "</p>" +
-        '<p class="need__lead">' + e.lead + "</p>" +
-        '<dl class="facts">' +
-        "<div><dt>색</dt><dd>" + e.color + "</dd></div>" +
-        "<div><dt>방향</dt><dd>" + e.direction + "</dd></div>" +
-        "<div><dt>계절</dt><dd>" + e.season + "</dd></div>" +
-        "<div><dt>생활 습관</dt><dd>" + e.habit + "</dd></div></dl></article>";
-    });
-    html += "</section>";
-
-    /* 4. 처방 아이템 */
-    var items = (window.TEUM_PRODUCTS || []).filter(function (it) { return (it.elements || []).indexOf(r.primary) > -1; });
+    /* 6. 처방 아이템 */
+    var prods = window.TEUM_PRODUCTS || [];
+    var items = prods.filter(function (it) { return (it.elements || []).indexOf(r.primary) > -1; });
     if (items.length) {
       var cats = [];
       items.forEach(function (it) { if (it.category && cats.indexOf(it.category) < 0) cats.push(it.category); });
-      html += '<section class="block" aria-labelledby="items-title">' +
-        '<p class="block__for">' + esc(name) + "님을 위한 처방</p>" +
-        '<h2 class="block__big" id="items-title">' + P.ko + "(" + P.hz + ")의 기운을 채워 줄<br>" + (NUM_KO[items.length] ? NUM_KO[items.length] + " 가지" : items.length + "가지") + " 아이템</h2>" +
-        '<p class="block__lead">' + (cats.length > 1 ? listKo(cats) + " " : "곁에 두는 물건으로 ") + P.ko + "(" + P.hz + ")의 기운을 가까이 둡니다.</p>" +
+      html += '<section class="panel" aria-labelledby="items-title">' +
+        '<p class="panel__for">' + esc(name) + "님을 위한 처방</p>" +
+        '<h2 class="panel__big" id="items-title">' + P.ko + "(" + P.hz + ")의 기운을 채워 줄 " + (NUM_KO[items.length] ? NUM_KO[items.length] + " 가지" : items.length + "가지") + " 아이템</h2>" +
+        '<p class="panel__text" style="margin:0 0 14px">' + (cats.length > 1 ? listKo(cats) + " " : "곁에 두는 물건으로 ") + P.ko + "(" + P.hz + ")의 기운을 가까이 둡니다.</p>" +
         '<ul class="items' + (items.length === 1 ? " is-one" : "") + '">';
       items.forEach(function (it) {
         var has = /^https?:\/\//.test(it.url || "");
@@ -565,12 +569,11 @@
       html += "</ul>" + (items.length > 2 ? '<div class="swipe-hint" aria-hidden="true"><i style="width:' + (200 / items.length) + '%"></i></div>' : "") + "</section>";
     }
 
-    /* 5. 전문가 분석 */
+    /* 7. 전문가 분석 */
     var ex = (window.TEUM_EXPERT || {})[r.primary];
     if (ex && ex.sections && ex.sections.length) {
-      html += '<section class="block" aria-labelledby="ex-title">' +
-        '<p class="block__for">전문가 분석</p><h2 class="block__big" id="ex-title" style="margin-bottom:14px">' + P.ko + "(" + P.hz + ")에 대해 더 알아보기</h2>" +
-        '<div class="acc">';
+      html += '<section class="panel" aria-labelledby="ex-title"><p class="panel__for">전문가 분석</p>' +
+        '<h2 class="panel__big" id="ex-title">' + P.ko + "(" + P.hz + ")에 대해 더 알아보기</h2><div class=\"acc\">";
       ex.sections.forEach(function (s, i) {
         html += "<details" + (i === 0 ? " open" : "") + "><summary>" +
           '<span class="no">' + pad(i + 1) + "</span><span>" + esc(s.title) + "</span>" + CHEVRON + "</summary>" +
@@ -579,18 +582,33 @@
       html += "</div></section>";
     }
 
+    /* 8. 다른 오행 함께 채우기 */
+    var rank = D.ORDER.filter(function (k) { return k !== r.primary; })
+      .sort(function (a, b) { return (r.count[a] - r.count[b]) || (r.score[a] - r.score[b]); });
+    html += '<section class="panel" aria-labelledby="more-title"><p class="panel__for">함께 채우면 좋은 기운</p>' +
+      '<h2 class="panel__big" id="more-title">다른 오행 함께 채우기</h2><ul class="more">';
+    rank.forEach(function (k, i) {
+      var e = D.EL[k];
+      var prod = prods.filter(function (it) { return (it.elements || []).indexOf(k) > -1; })[0];
+      var has = prod && /^https?:\/\//.test(prod.url || "");
+      var inner = '<img src="' + base + "assets/img/jar-" + k + '.webp" alt="" width="480" height="480" loading="lazy">' +
+        '<span class="more__t"><small>' + (i + 2) + "순위</small><b>" + e.ko + "(" + e.hz + ") " + (prod ? esc(prod.name) : "기운") + "</b></span>";
+      html += '<li style="--c:' + e.hex + '">' + (has ? '<a href="' + esc(prod.url) + '" target="_blank" rel="noopener">' + inner + "</a>" : "<div>" + inner + "</div>") + "</li>";
+    });
+    html += "</ul></section>";
+
     html += '<p class="disclaimer">전통 명리학의 오행 계산을 바탕으로 한 참고용 결과입니다. 입력한 정보는 이 화면에서만 계산되며 저장되지 않습니다.' +
       (r.known ? "" : " 태어난 시간을 알면 두 글자가 더해져 결과가 달라질 수 있습니다.") + "</p>";
 
-    /* 6. 하단 고정 버튼 */
-    html += '<div class="cta" style="margin-inline:calc(var(--pad) * -1)"><div class="actions">' +
+    /* 하단 고정 버튼 */
+    html += '<div class="cta cta--result"><div class="actions">' +
       '<span class="copied" role="status" aria-live="polite"></span>' +
-      '<a class="btn btn--ghost" href="' + base + 'form/">다시 분석</a>' +
-      '<button class="btn" type="button" id="share">결과 공유</button></div></div>';
+      '<a class="btn btn--ghost" href="' + base + 'form/">다시 분석하기</a>' +
+      '<button class="btn" type="button" id="share">결과 공유하기</button></div></div>';
 
     main.innerHTML = html;
 
-    // 제목 한 줄 맞춤: 넘치면 글자를 조금씩 줄인다(최소 15px)
+    // 제목 한 줄 맞춤
     var fit = main.querySelector(".fit");
     if (fit) {
       var fs = 22;
