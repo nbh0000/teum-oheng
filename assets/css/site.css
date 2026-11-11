@@ -254,7 +254,7 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 }
 .intro__foot h1 { margin: 0 0 6px; font-size: 20px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.35; }
 .intro__foot p { margin: 0 0 20px; font-size: var(--fs-sm); color: var(--mute); }
-.intro__foot .btn { min-height: 50px; font-size: 14px; font-weight: 500; letter-spacing: 0; }
+.intro__foot .btn { width: 82%; min-height: 50px; font-size: 14px; font-weight: 500; letter-spacing: 0; }
 
 /* =========================================================
    공통 페이지 (입력, 결과)
