@@ -223,9 +223,9 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .orb:active img { transform: scale(0.95); }
 @keyframes orbIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.85); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 
-.cycle.is-focus .arc, .cycle.is-focus .ray { opacity: 0.12; }
-.cycle.is-focus .arc.on { opacity: 1; stroke-width: 2; }
-.cycle.is-focus .ray.on { opacity: 1; stroke-width: 1.6; }
+.cycle.is-focus .arc, .cycle.is-focus .ray { opacity: 0.1; }
+.cycle.is-focus .arc.on { opacity: 1; stroke-width: 2.2; }
+.cycle.is-focus .ray.on { opacity: 1; stroke-width: 2.2; stroke-dasharray: 6 4; }
 .cycle.is-focus .orb:not(.on) img { filter: grayscale(0.7) opacity(0.5); }
 .cycle .orb.on img { transform: scale(1.04); }
 
@@ -352,6 +352,7 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .r-head { margin: 6px 0 22px; }
 .r-head h1 { margin: 0 0 6px; font-size: var(--fs-xl); font-weight: 600; letter-spacing: -0.035em; line-height: 1.3; }
 .r-head h1 span { font-family: var(--hanja); font-weight: 400; }
+.r-head h1.fit { white-space: nowrap; overflow: hidden; }
 .r-head .birth { margin: 0; font-size: var(--fs-xs); color: var(--mute); line-height: 1.55; }
 
 .block { padding: 26px 0; border-top: 1px solid var(--line); }

@@ -83,7 +83,11 @@
       svg.querySelectorAll(".arc,.ray").forEach(function (p) {
         var m = p.getAttribute("marker-end");
         p.removeAttribute("marker-end");
-        p.addEventListener("animationend", function () { p.setAttribute("marker-end", m); }, { once: true });
+        p.addEventListener("animationend", function () {
+          p.setAttribute("marker-end", m);
+          p.classList.remove("draw"); // 애니메이션이 투명도를 붙잡지 않도록 해제
+          p.style.removeProperty("animation-delay");
+        }, { once: true });
       });
       svg.querySelectorAll(".arc").forEach(function (p, i) {
         var len = p.getTotalLength();
@@ -466,7 +470,7 @@
 
     /* 1. 머리 + 사주 원국 */
     html += '<section class="reveal" aria-labelledby="r-title"><div class="r-head">' +
-      '<h1 id="r-title">' + esc(name) + "님에게 필요한 기운은<br>" + P.ko + '<span lang="zh-Hant">(' + P.hz + ")</span>입니다</h1>" +
+      '<h1 id="r-title" class="fit">' + esc(name) + "님에게 필요한 기운은 " + P.ko + '<span lang="zh-Hant">(' + P.hz + ")</span></h1>" +
       '<p class="birth">' + birth + other + ", " + time + "</p></div>" +
       '<div class="pillars" role="group" aria-label="사주 여덟 글자">';
     r.pillars.forEach(function (pl) {
@@ -585,6 +589,15 @@
       '<button class="btn" type="button" id="share">결과 공유</button></div></div>';
 
     main.innerHTML = html;
+
+    // 제목 한 줄 맞춤: 넘치면 글자를 조금씩 줄인다(최소 15px)
+    var fit = main.querySelector(".fit");
+    if (fit) {
+      var fs = 22;
+      fit.style.fontSize = fs + "px";
+      while (fit.scrollWidth > fit.clientWidth && fs > 15) { fs -= 0.5; fit.style.fontSize = fs + "px"; }
+      if (fit.scrollWidth > fit.clientWidth) fit.style.whiteSpace = "normal";
+    }
 
     // 아코디언: 닫힐 때도 부드럽게
     main.querySelectorAll(".acc summary").forEach(function (sm) {
