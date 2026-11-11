@@ -172,8 +172,8 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
   min-height: 0;
   margin: 0;
   background: none;
-  display: grid; place-items: center;
-  padding: calc(72px + env(safe-area-inset-top) + 34px) 16px 104px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+  padding: calc(72px + env(safe-area-inset-top) + 8px) 16px 104px;
   overflow: hidden;
 }
 .cycle {
@@ -237,7 +237,7 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .cycle__legend dd { margin: 0; }
 .cycle__legend svg { width: 18px; height: 6px; color: var(--ink); }
 .cycle__caption {
-  position: absolute; left: 0; right: 0; top: calc(72px + env(safe-area-inset-top));
+  order: -1;
   margin: 0; padding: 0 var(--pad);
   text-align: center; font-size: 13px; color: var(--mute);
   min-height: 1.5em;
