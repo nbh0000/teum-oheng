@@ -110,7 +110,7 @@
       b.style.top = (pos[k].y / 6) + "%";
       b.style.animationDelay = (reduce ? 0 : 0.1 + i * 0.1) + "s";
       b.setAttribute("aria-label", e.ko + "(" + e.hz + "): " + e.short);
-      b.innerHTML = '<img src="' + (document.body.getAttribute("data-base") || "") + 'assets/img/orb-' + k + '.webp" alt="" width="480" height="480" decoding="async">' +
+      b.innerHTML = '<img src="' + (document.body.getAttribute("data-base") || "") + 'assets/img/jar-' + k + '.webp" alt="" width="480" height="480" decoding="async">' +
         "<b>" + e.hz + '</b><span class="nm">' + e.ko + "</span>";
       root.appendChild(b);
 
@@ -473,7 +473,7 @@
       html += '<div class="pillar"><div class="pillar__name">' + pl.label + "주</div>";
       if (pl.chars) {
         pl.chars.forEach(function (ch) {
-          html += '<div class="glyph"><b lang="zh-Hant">' + ch.hz + "</b><span>" + ch.ko + " · " + D.EL[ch.el].ko + "</span></div>";
+          html += '<div class="glyph" style="--c:' + D.EL[ch.el].hex + '"><b lang="zh-Hant">' + ch.hz + "</b><span>" + ch.ko + " · " + D.EL[ch.el].ko + "</span></div>";
         });
       } else {
         html += '<div class="glyph is-unknown"><b>?</b><span>모름</span></div><div class="glyph is-unknown"><b>?</b><span>모름</span></div>';
@@ -490,7 +490,7 @@
     D.ORDER.forEach(function (k) {
       var e = D.EL[k], n = r.count[k], isLow = r.low.indexOf(k) > -1, isHigh = r.high.indexOf(k) > -1;
       var h = Math.round(r.pct[k] / maxPct * 100);
-      html += '<li class="' + (isLow ? "is-low" : isHigh ? "is-high" : "") + '" aria-label="' + e.ko + " " + n + "개, 세력 " + Math.round(r.pct[k]) + '%">' +
+      html += '<li style="--c:' + e.hex + '" class="' + (isLow ? "is-low" : isHigh ? "is-high" : "") + '" aria-label="' + e.ko + " " + n + "개, 세력 " + Math.round(r.pct[k]) + '%">' +
         '<span class="pct">' + Math.round(r.pct[k]) + "%</span>" +
         '<span class="meter" aria-hidden="true"><i style="--h:' + Math.max(2, h) + '%"></i></span>' +
         '<span class="hz" lang="zh-Hant">' + e.hz + "</span>" +
@@ -524,8 +524,9 @@
     r.low.forEach(function (k) {
       var e = D.EL[k];
       html += '<article class="need" aria-label="' + e.ko + ' 기운">' +
-        '<figure class="need__media"><img src="' + base + "assets/img/" + e.img + '.jpg" alt="" width="1200" height="1500" loading="lazy" decoding="async"></figure>' +
-        '<p class="need__title"><b lang="zh-Hant">' + e.hz + "</b><span>" + e.ko + '</span><span class="latin">' + e.en.toUpperCase() + "</span></p>" +
+        '<figure class="need__media need__media--card"><img src="' + base + "assets/img/card-" + k + '.webp" alt="' + e.ko + "(" + e.hz + ") 카드, " + e.kw + ", " + e.short + '" width="990" height="1485" loading="lazy" decoding="async"></figure>' +
+        '<p class="need__title"><b lang="zh-Hant">' + e.hz + "</b><span>" + e.ko + '</span><span class="need__kw">' + e.kw + "</span></p>" +
+        '<p class="need__en" style="--c:' + e.hex + '">' + e.kwEn + "</p>" +
         '<p class="need__lead">' + e.lead + "</p>" +
         '<dl class="facts">' +
         "<div><dt>색</dt><dd>" + e.color + "</dd></div>" +

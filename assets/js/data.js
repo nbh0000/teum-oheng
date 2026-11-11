@@ -5,7 +5,7 @@ window.OHENG = (function () {
   var EL = {
     wood: {
       hz: "木", ko: "목", en: "Wood", img: "wood",
-      short: "자라고 뻗어 나가는 기운",
+      short: "앞으로 뻗어 나가는 기운", kw: "성장 · 도약", kwEn: "GROWTH · RISE", hex: "#9fcbba",
       lead: "목은 봄의 새순처럼 위로 자라는 기운입니다. 무언가를 시작하고 계획을 밀고 나가는 힘이 여기서 나옵니다. 목이 부족하면 새 일을 벌이기 어렵고 생각이 쉽게 굳습니다.",
       color: "푸른색, 초록", direction: "동쪽", season: "봄", habit: "아침 산책, 식물 기르기",
       vessel: "재 유약을 입힌 길고 가는 화병",
@@ -13,7 +13,7 @@ window.OHENG = (function () {
     },
     fire: {
       hz: "火", ko: "화", en: "Fire", img: "fire",
-      short: "밝게 드러나고 퍼지는 기운",
+      short: "마음을 움직이고 관계를 잇는 기운", kw: "열정 · 인연", kwEn: "PASSION · CONNECTION", hex: "#f2ab9e",
       lead: "화는 한여름 햇빛처럼 밝게 드러나는 기운입니다. 표현하고 사람을 만나고 열정을 내는 힘이 여기서 나옵니다. 화가 부족하면 의욕이 쉽게 꺼지고 몸이 차가워지기 쉽습니다.",
       color: "붉은색, 자주", direction: "남쪽", season: "여름", habit: "햇볕 쬐기, 따뜻한 차",
       vessel: "장작가마에서 그을린 사발",
@@ -21,7 +21,7 @@ window.OHENG = (function () {
     },
     earth: {
       hz: "土", ko: "토", en: "Earth", img: "earth",
-      short: "받쳐 주고 모아 두는 기운",
+      short: "중심을 잡고 심신을 돌보는 기운", kw: "안정 · 건강", kwEn: "BALANCE · WELLBEING", hex: "#e8cb72",
       lead: "토는 모든 것을 받아 주는 땅의 기운입니다. 중심을 잡고 신뢰를 쌓고 꾸준히 이어 가는 힘이 여기서 나옵니다. 토가 부족하면 마음이 들뜨고 일이 오래 이어지지 않습니다.",
       color: "황토색, 베이지", direction: "중앙", season: "환절기", habit: "규칙적인 식사, 흙 만지기",
       vessel: "유약 없이 구운 흙 그릇",
@@ -29,7 +29,7 @@ window.OHENG = (function () {
     },
     metal: {
       hz: "金", ko: "금", en: "Metal", img: "metal",
-      short: "다듬고 맺고 끊는 기운",
+      short: "쌓이고 결실을 맺는 기운", kw: "풍요 · 결실", kwEn: "ABUNDANCE · PROSPERITY", hex: "#c4beb8",
       lead: "금은 가을의 서늘한 공기처럼 맺고 끊는 기운입니다. 결단하고 정리하고 원칙을 지키는 힘이 여기서 나옵니다. 금이 부족하면 결정을 미루고 주변이 쉽게 어수선해집니다.",
       color: "흰색, 은색", direction: "서쪽", season: "가을", habit: "정리 정돈, 깊은 호흡",
       vessel: "단정한 백자 잔",
@@ -37,7 +37,7 @@ window.OHENG = (function () {
     },
     water: {
       hz: "水", ko: "수", en: "Water", img: "water",
-      short: "스며들고 흘러가는 기운",
+      short: "판단하고 원하는 곳에 도달하는 기운", kw: "지혜 · 성취", kwEn: "WISDOM · ACHIEVEMENT", hex: "#2e2d2d",
       lead: "수는 겨울 물처럼 깊이 스며드는 기운입니다. 생각하고 배우고 유연하게 흐르는 힘이 여기서 나옵니다. 수가 부족하면 쉽게 지치고 생각이 한쪽으로 치우칩니다.",
       color: "검은색, 남색", direction: "북쪽", season: "겨울", habit: "충분한 수면, 물 마시기",
       vessel: "검은 유약의 깊은 사발",
