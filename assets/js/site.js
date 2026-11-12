@@ -32,6 +32,12 @@
     initDock();
   }
 
+  // 받침이 있으면 앞의 조사, 없으면 뒤의 조사 (목은/화는, 금을/토를)
+  function josa(word, withFinal, withoutFinal) {
+    var c = word.charCodeAt(word.length - 1) - 0xAC00;
+    return c >= 0 && c <= 11171 && c % 28 !== 0 ? withFinal : withoutFinal;
+  }
+
   function buildCycle(root) {
     if (!root) return;
     var NS = "http://www.w3.org/2000/svg";
@@ -112,10 +118,13 @@
       if (caption) caption.innerHTML = defaultCaption;
     }
     function restore() { if (pinned) shows[pinned](); else clear(); }
-    document.addEventListener("click", function (ev) {
+    // iOS Safari 는 버튼이 아닌 빈 곳의 click 을 보내지 않으므로 pointerdown/touchstart 로 받는다
+    function outside(ev) {
       if (!pinned || (ev.target.closest && ev.target.closest(".orb"))) return;
       pinned = null; clear();
-    });
+    }
+    document.addEventListener(window.PointerEvent ? "pointerdown" : "touchstart", outside, { passive: true });
+    document.addEventListener("click", outside);
     document.addEventListener("keydown", function (ev) {
       if (ev.key === "Escape" && pinned) { pinned = null; clear(); }
     });
@@ -130,7 +139,7 @@
       b.style.top = (pos[k].y / 6) + "%";
       b.style.animationDelay = (reduce ? 0 : 0.1 + i * 0.1) + "s";
       b.setAttribute("aria-label", e.ko + "(" + e.hz + "): " + e.short);
-      b.innerHTML = '<img src="' + (document.body.getAttribute("data-base") || "") + 'assets/img/orb-' + k + '.webp" alt="" width="480" height="480" decoding="async">' +
+      b.innerHTML = '<img src="' + (document.body.getAttribute("data-base") || "") + 'assets/img/orb-' + k + '.webp?v=2" alt="" width="480" height="480" decoding="async">' +
         "<b>" + e.hz + '</b><span class="nm">' + e.ko + "</span>";
       root.appendChild(b);
 
@@ -144,7 +153,7 @@
         });
         if (caption) {
           var g = D.EL[D.generates(k)], c = D.EL[D.controls(k)];
-          caption.innerHTML = "<b>" + e.ko + "</b>은 " + "<b>" + g.ko + "</b>를 살리고, " + "<b>" + c.ko + "</b>를 누릅니다. " + esc(e.short) + ".";
+          caption.innerHTML = "<b>" + e.ko + "</b>" + josa(e.ko, "은", "는") + " <b>" + g.ko + "</b>" + josa(g.ko, "을", "를") + " 살리고, <b>" + c.ko + "</b>" + josa(c.ko, "을", "를") + " 누릅니다. " + esc(e.short) + ".";
         }
       }
       shows[k] = on;
