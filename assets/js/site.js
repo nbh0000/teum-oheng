@@ -17,6 +17,22 @@
   }
 
   function $(s, r) { return (r || document).querySelector(s); }
+
+  /* 관리자에서 바꾼 값 반영 (없으면 이 파일과 data.js 의 기본값) */
+  var BASE = document.body.getAttribute("data-base") || "";
+  var TEXT = window.TEUM_TEXT || {};
+  function T(key, fallback) { return typeof TEXT[key] === "string" && TEXT[key] !== "" ? TEXT[key] : fallback; }
+  // {이름} 자리에 이름을 넣는다 (결과는 HTML 로 안전한 문자열)
+  function tpl(s, name) { return esc(s).split("{이름}").join(esc(name)); }
+  (function () {
+    var X = window.TEUM_EL || {};
+    D.ORDER.forEach(function (k) {
+      var o = X[k]; if (!o) return;
+      Object.keys(o).forEach(function (f) { D.EL[k][f] = o[f]; });
+    });
+  })();
+  function orbSrc(k) { return D.EL[k].orb || (BASE + "assets/img/orb-" + k + ".svg"); }
+  function cardSrc(k) { return D.EL[k].card || (BASE + "assets/img/card-" + k + ".webp?v=2"); }
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -139,7 +155,7 @@
       b.style.top = (pos[k].y / 6) + "%";
       b.style.animationDelay = (reduce ? 0 : 0.1 + i * 0.1) + "s";
       b.setAttribute("aria-label", e.ko + "(" + e.hz + "): " + e.short);
-      b.innerHTML = '<img src="' + (document.body.getAttribute("data-base") || "") + 'assets/img/orb-' + k + '.svg" alt="" width="480" height="480" decoding="async">' +
+      b.innerHTML = '<img src="' + esc(orbSrc(k)) + '" alt="" width="480" height="480" decoding="async">' +
         "<b>" + e.hz + '</b><span class="nm">' + e.ko + "</span>";
       root.appendChild(b);
 
@@ -349,7 +365,7 @@
     document.title = name + "님의 오행 | TEUM POTTERY";
 
     var primary = D.EL[res.primary];
-    var steps = ["여덟 글자를 세우고 있습니다", "다섯 기운을 헤아리고 있습니다", "부족한 기운을 찾고 있습니다"];
+    var steps = [T("loading.step1", "여덟 글자를 세우고 있습니다"), T("loading.step2", "다섯 기운을 헤아리고 있습니다"), T("loading.step3", "부족한 기운을 찾고 있습니다")];
     if (reduce) { end(400); return; }
 
     // 한자 순환 + 단계 문구
@@ -503,15 +519,15 @@
     var html = "";
 
     /* 머리 */
-    html += '<div class="r-head reveal"><h1 id="r-title" class="fit">' + esc(name) + "님에게 필요한 기운은 " + PL + "</h1>" +
+    html += '<div class="r-head reveal"><h1 id="r-title" class="fit">' + tpl(T("result.head", "{이름}님에게 필요한 기운은"), name) + " " + PL + "</h1>" +
       '<p class="birth">' + birth + other + ", " + time + "</p></div>";
 
     /* 1. 대표 패널 */
     html += '<section class="panel panel--hero reveal" style="--c:' + P.hex + '" aria-label="가장 필요한 기운">' +
-      '<div class="hero__top"><img class="hero__card" src="' + base + "assets/img/card-" + r.primary + '.webp?v=2" alt="' + P.ko + "(" + P.hz + ") 카드" + '" width="720" height="1036">' +
-      '<div class="hero__txt"><p class="hero__hz" lang="zh-Hant">' + P.hz + '</p><p class="hero__kw">' + P.kw + '</p><p class="hero__en">' + P.kwEn + "</p></div></div>" +
-      '<p class="hero__msg"><b>' + esc(name) + "</b>님에게 지금 가장 필요한 건<br><b>" + P.ko + "(" + P.hz + ")의 기운</b>입니다. " + P.short + ".</p>" +
-      '<ul class="tags">' + P.tags.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul></section>";
+      '<div class="hero__top"><img class="hero__card" src="' + esc(cardSrc(r.primary)) + '" alt="' + P.ko + "(" + P.hz + ") 카드" + '">' +
+      '<div class="hero__txt"><p class="hero__hz" lang="zh-Hant">' + P.hz + '</p><p class="hero__kw">' + esc(P.kw) + '</p><p class="hero__en">' + esc(P.kwEn) + "</p></div></div>" +
+      '<p class="hero__msg"><b>' + esc(name) + "</b>님에게 지금 가장 필요한 건<br><b>" + P.ko + "(" + P.hz + ")의 기운</b>입니다. " + esc(P.short) + ".</p>" +
+      '<ul class="tags">' + P.tags.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ul></section>";
 
     var prods = window.TEUM_PRODUCTS || [];
     /* 처방 아이템 (오행 밸런스 앞) */
@@ -520,7 +536,7 @@
       var cats = [];
       items.forEach(function (it) { if (it.category && cats.indexOf(it.category) < 0) cats.push(it.category); });
       html += '<section class="panel" aria-labelledby="items-title">' +
-        '<p class="panel__for">' + esc(name) + "님을 위한 처방</p>" +
+        '<p class="panel__for">' + tpl(T("result.items_for", "{이름}님을 위한 처방"), name) + "</p>" +
         '<h2 class="panel__big" id="items-title">' + P.ko + "(" + P.hz + ")의 기운을 채워 줄 " + (NUM_KO[items.length] ? NUM_KO[items.length] + " 가지" : items.length + "가지") + " 아이템</h2>" +
         '<p class="panel__text" style="margin:0 0 14px">' + (cats.length > 1 ? listKo(cats) + " " : "곁에 두는 물건으로 ") + P.ko + "(" + P.hz + ")의 기운을 가까이 둡니다.</p>" +
         '<ul class="items' + (items.length === 1 ? " is-one" : "") + '">';
@@ -533,14 +549,14 @@
           (it.summary ? '<p class="item__sum">' + esc(it.summary) + "</p>" : "") + "</div>" +
           (has
             ? '<a class="item__link" href="' + esc(it.url) + '" target="_blank" rel="noopener">' + esc(it.button || "바로가기") + ARROW + "</a>"
-            : '<span class="item__link" aria-disabled="true">준비 중</span>') +
+            : '<span class="item__link" aria-disabled="true">' + esc(T("result.item_soon", "준비 중")) + "</span>") +
           "</li>";
       });
       html += "</ul>" + (items.length > 2 ? '<div class="swipe-hint" aria-hidden="true"><i style="width:' + (200 / items.length) + '%"></i></div>' : "") + "</section>";
     }
 
     /* 2. 오행 밸런스 */
-    html += '<section class="panel reveal" aria-labelledby="bal-title"><h2 class="panel__title" id="bal-title">오행 밸런스</h2><ul class="bal">';
+    html += '<section class="panel reveal" aria-labelledby="bal-title"><h2 class="panel__title" id="bal-title">' + esc(T("result.bal_title", "오행 밸런스")) + '</h2><ul class="bal">';
     var maxPct = Math.max.apply(null, D.ORDER.map(function (k) { return r.pct[k]; })) || 1;
     D.ORDER.forEach(function (k) {
       var e = D.EL[k], isP = k === r.primary;
@@ -556,25 +572,32 @@
 
     /* 상생 조합: 부족한 기운 + 그 기운을 살리는(낳는) 기운 */
     var giverOf = function (k) { return D.ORDER.filter(function (o) { return D.generates(o) === k; })[0]; };
-    var orbImg = function (el) { return '<img src="' + base + "assets/img/orb-" + el + '.svg" alt="" width="480" height="480" loading="lazy">'; };
+    var orbImg = function (el) { return '<img src="' + esc(orbSrc(el)) + '" alt="" width="480" height="480" loading="lazy">'; };
     var elName = function (e) { return e.ko + '(<span lang="zh-Hant">' + e.hz + "</span>)"; };
+    var tokOf = function (k) {
+      var has = function (it) { return it.image && (it.elements || []).indexOf(k) > -1; };
+      var all = window.TEUM_PRODUCTS || [];
+      return all.filter(function (it) { return has(it) && it.category === "그립톡"; })[0] || all.filter(has)[0] || null;
+    };
     var bigEl = function (k, label) {
-      var e = D.EL[k];
-      return '<div class="sang__el"><span class="sang__orb" data-el="' + k + '">' + orbImg(k) + '<b lang="zh-Hant" aria-hidden="true">' + e.hz + "</b></span>" +
-        "<small>" + label + "</small><strong>" + elName(e) + "</strong></div>";
+      var e = D.EL[k], tok = tokOf(k);
+      var pic = tok
+        ? '<span class="sang__tok"><img src="' + esc(tok.image) + '" alt="" width="800" height="1000" loading="lazy" decoding="async"></span>'
+        : '<span class="sang__orb" data-el="' + k + '">' + orbImg(k) + '<b lang="zh-Hant" aria-hidden="true">' + e.hz + "</b></span>";
+      return '<div class="sang__el">' + pic + "<small>" + label + "</small><strong>" + elName(e) + "</strong></div>";
     };
     var G = giverOf(r.primary);
     html += '<section class="panel reveal" aria-labelledby="more-title">' +
-      '<h2 class="panel__big" id="more-title">서로를 살리는 상생의 기운</h2>' +
-      '<p class="panel__sub">부족한 기운에, 이를 살리는 상생의 기운을 더해보세요.</p>' +
+      '<h2 class="panel__big" id="more-title">' + esc(T("result.sang_title", "서로를 살리는 상생의 기운")) + "</h2>" +
+      '<p class="panel__sub">' + esc(T("result.sang_sub", "부족한 기운에, 이를 살리는 상생의 기운을 더해보세요.")) + "</p>" +
       '<div class="sang" style="--c:' + P.hex + ";--c2:" + D.EL[G].hex + '">' +
-      bigEl(r.primary, "부족한 기운") + '<span class="sang__plus" aria-hidden="true"></span>' + bigEl(G, "함께 소지할 기운") + "</div>" +
+      bigEl(r.primary, esc(T("result.sang_lack", "부족한 기운"))) + '<span class="sang__plus" aria-hidden="true"></span>' + bigEl(G, esc(T("result.sang_give", "살려주는 기운"))) + "</div>" +
       '<ul class="sang__rest">';
     D.ORDER.forEach(function (k) {
       if (k === r.primary) return;
       var g = giverOf(k);
       html += '<li><span class="sang__mini" aria-hidden="true">' + orbImg(k) + orbImg(g) + "</span>" +
-        '<span class="sang__pair"><span class="sr-only">부족한 기운 </span>' + elName(D.EL[k]) + '<i aria-hidden="true">+</i><span class="sr-only">함께 소지할 기운 </span><b>' + elName(D.EL[g]) + "</b></span></li>";
+        '<span class="sang__pair"><span class="sr-only">' + esc(T("result.sang_lack", "부족한 기운")) + " </span>" + elName(D.EL[k]) + '<i aria-hidden="true">+</i><span class="sr-only">' + esc(T("result.sang_give", "살려주는 기운")) + " </span><b>" + elName(D.EL[g]) + "</b></span></li>";
     });
     html += "</ul></section>";
 
@@ -583,7 +606,7 @@
     var role = ROLE[roleKey], me = D.EL[r.me];
     var levelKo = { strong: "신강", balanced: "중화", weak: "신약" }[r.level];
     var x = Math.min(96, Math.max(4, r.support));
-    html += '<section class="panel reveal" aria-labelledby="me-title"><h2 class="panel__title" id="me-title">나에게 이 기운이 뜻하는 것</h2>' +
+    html += '<section class="panel reveal" aria-labelledby="me-title"><h2 class="panel__title" id="me-title">' + esc(T("result.me_title", "나에게 이 기운이 뜻하는 것")) + "</h2>" +
       '<div class="me">' +
       '<div class="me__row"><span class="me__k">나를 뜻하는 글자</span><span class="me__v"><b lang="zh-Hant">' + r.dayMaster + "</b> " + D.GAN_KO[r.dayMaster] + ", " + me.ko + "(" + me.hz + ")</span></div>" +
       '<div class="me__row"><span class="me__k">' + P.ko + "(" + P.hz + ")의 의미</span><span class=\"me__v\">" + role.mean + " <small>" + role.name + "</small></span></div>" +
@@ -593,7 +616,7 @@
       '<p class="panel__text">' + esc(name) + "님에게 " + P.ko + "(" + P.hz + ")" + (jong(P.ko) ? "은 " : "는 ") + role.mean + (jong(role.mean) ? "을" : "를") + " 뜻합니다. " + role.lack + "</p></section>";
 
     /* 4. 사주 원국 */
-    html += '<section class="panel" aria-labelledby="pil-title"><h2 class="panel__title" id="pil-title">사주 여덟 글자</h2><div class="pillars" role="group" aria-label="사주 여덟 글자">';
+    html += '<section class="panel" aria-labelledby="pil-title"><h2 class="panel__title" id="pil-title">' + esc(T("result.pil_title", "사주 여덟 글자")) + '</h2><div class="pillars" role="group" aria-label="사주 여덟 글자">';
     r.pillars.forEach(function (pl) {
       html += '<div class="pillar"><div class="pillar__name">' + pl.label + "주</div>";
       if (pl.chars) {
@@ -605,22 +628,22 @@
       }
       html += "</div>";
     });
-    html += '</div><p class="note">세력은 천간 1, 지지는 지장간 비율(본기 60, 중기 30, 여기 10), 태어난 달은 두 배로 계산합니다.</p></section>';
+    html += '</div><p class="note">' + esc(T("result.pil_note", "세력은 천간 1, 지지는 지장간 비율(본기 60, 중기 30, 여기 10), 태어난 달은 두 배로 계산합니다.")) + "</p></section>";
 
     /* 5. 채우는 방법 */
     html += '<section class="panel" aria-labelledby="how-title"><h2 class="panel__title" id="how-title">' + P.ko + "(" + P.hz + ")" + (jong(P.ko) ? "을" : "를") + " 채우는 방법</h2>" +
       '<dl class="facts">' +
-      "<div><dt>색</dt><dd>" + P.color + "</dd></div>" +
-      "<div><dt>방향</dt><dd>" + P.direction + "</dd></div>" +
-      "<div><dt>계절</dt><dd>" + P.season + "</dd></div>" +
-      "<div><dt>생활 습관</dt><dd>" + P.habit + "</dd></div></dl>" +
-      (r.low.length > 1 ? '<p class="note">' + r.low.slice(1).map(label).join(", ") + "도 함께 부족합니다. 아래 '다른 오행 함께 채우기'에서 볼 수 있습니다.</p>" : "") +
+      "<div><dt>색</dt><dd>" + esc(P.color) + "</dd></div>" +
+      "<div><dt>방향</dt><dd>" + esc(P.direction) + "</dd></div>" +
+      "<div><dt>계절</dt><dd>" + esc(P.season) + "</dd></div>" +
+      "<div><dt>생활 습관</dt><dd>" + esc(P.habit) + "</dd></div></dl>" +
+      (r.low.length > 1 ? '<p class="note">' + r.low.slice(1).map(label).join(", ") + "도 함께 부족합니다.</p>" : "") +
       "</section>";
 
     /* 7. 전문가 분석 */
     var ex = (window.TEUM_EXPERT || {})[r.primary];
     if (ex && ex.sections && ex.sections.length) {
-      html += '<section class="panel" aria-labelledby="ex-title"><p class="panel__for">전문가 분석</p>' +
+      html += '<section class="panel" aria-labelledby="ex-title"><p class="panel__for">' + esc(T("result.expert_label", "전문가 분석")) + "</p>" +
         '<h2 class="panel__big" id="ex-title">' + P.ko + "(" + P.hz + ")에 대해 더 알아보기</h2><div class=\"acc\">";
       ex.sections.forEach(function (s, i) {
         html += "<details" + (i === 0 ? " open" : "") + "><summary>" +
@@ -630,14 +653,14 @@
       html += "</div></section>";
     }
 
-    html += '<p class="disclaimer">전통 명리학의 오행 계산을 바탕으로 한 참고용 결과입니다. 입력한 정보는 이 화면에서만 계산되며 저장되지 않습니다.' +
+    html += '<p class="disclaimer">' + esc(T("result.disclaimer", "전통 명리학의 오행 계산을 바탕으로 한 참고용 결과입니다. 입력한 정보는 이 화면에서만 계산되며 저장되지 않습니다.")) +
       (r.known ? "" : " 태어난 시간을 알면 두 글자가 더해져 결과가 달라질 수 있습니다.") + "</p>";
 
     /* 하단 고정 버튼 */
     html += '<div class="cta cta--result"><div class="actions">' +
       '<span class="copied" role="status" aria-live="polite"></span>' +
-      '<a class="btn btn--ghost" href="' + base + 'form/">다시 분석하기</a>' +
-      '<button class="btn" type="button" id="share">결과 공유하기</button></div></div>';
+      '<a class="btn btn--ghost" href="' + base + 'form/">' + esc(T("result.btn_again", "다시 분석하기")) + "</a>" +
+      '<button class="btn" type="button" id="share">' + esc(T("result.btn_share", "결과 공유하기")) + "</button></div></div>";
 
     main.innerHTML = html;
 

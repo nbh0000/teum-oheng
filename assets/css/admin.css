@@ -73,6 +73,24 @@ tr:not(.is-off) .state { border-color: var(--ink); }
 .drop input:focus-visible + * , .drop:focus-within .drop__ph { outline: 1px solid var(--ink); outline-offset: 2px; }
 
 .xform { max-width: 820px; }
+/* 화면 문구·오행 편집 */
+.cform .xitem { scroll-margin-top: calc(var(--header-h) + 16px); }
+.cform .xitem legend { font-family: inherit; font-weight: 600; color: var(--ink); font-size: var(--fs-md); padding-bottom: 14px; }
+.crow { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 6px 20px; align-items: start; padding: 7px 0; }
+.crow .field__label { margin: 0; padding-top: 14px; }
+.crow .field__label small { display: block; }
+.crow .input::placeholder, .pform .input::placeholder { color: var(--mute); opacity: 0.75; }
+.form__submit--stick { position: sticky; bottom: 0; padding-block: 14px; background: linear-gradient(to top, var(--paper) 70%, transparent); }
+.drop--wide .drop__ph { aspect-ratio: 1200 / 630; max-width: 360px; }
+.drop--orb .drop__ph { aspect-ratio: 1; max-width: 140px; border-radius: 50%; }
+.drop--card .drop__ph { aspect-ratio: 720 / 1036; max-width: 140px; }
+.drop.is-new .drop__ph { border-style: solid; border-color: var(--ink); }
+.imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.imgs .field { margin-bottom: 0; }
+@media (max-width: 767px) {
+  .crow { grid-template-columns: 1fr; }
+  .crow .field__label { padding-top: 6px; }
+}
 .xitem { border: 0; border-top: 1px solid var(--line); margin: 0; padding: 18px 0 26px; min-inline-size: 0; }
 .xitem:first-of-type { border-top-color: var(--ink); }
 .xitem legend { float: left; width: 100%; padding: 0 0 10px; font-family: var(--latin); font-weight: 300; color: var(--mute); font-size: var(--fs-sm); }
@@ -88,4 +106,12 @@ tr:not(.is-off) .state { border-color: var(--ink); }
   .admin .logo-word { display: none; }
   .field.two { grid-template-columns: 1fr; }
   .el-pick b { font-size: 1.2rem; }
+}
+
+/* 좁은 화면: 메뉴가 늘어 영문 로고와 겹치므로 로고 글자는 숨기고 메뉴는 옆으로 민다 */
+@media (max-width: 767px) {
+  body[data-page="admin"] .site-header .logo-word { display: none; }
+  body[data-page="admin"] .site-header .brand { flex: none; }
+  .admin-nav { min-width: 0; flex: 1; justify-content: flex-start; gap: 16px; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); padding-right: 20px; }
+  .admin-nav::-webkit-scrollbar { display: none; }
 }
