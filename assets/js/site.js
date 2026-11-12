@@ -508,7 +508,7 @@
 
     /* 1. 대표 패널 */
     html += '<section class="panel panel--hero reveal" style="--c:' + P.hex + '" aria-label="가장 필요한 기운">' +
-      '<div class="hero__top"><img class="hero__card" src="' + base + "assets/img/card-" + r.primary + '.webp" alt="' + P.ko + "(" + P.hz + ") 카드" + '" width="990" height="1485">' +
+      '<div class="hero__top"><img class="hero__card" src="' + base + "assets/img/card-" + r.primary + '.webp?v=2" alt="' + P.ko + "(" + P.hz + ") 카드" + '" width="720" height="1036">' +
       '<div class="hero__txt"><p class="hero__hz" lang="zh-Hant">' + P.hz + '</p><p class="hero__kw">' + P.kw + '</p><p class="hero__en">' + P.kwEn + "</p></div></div>" +
       '<p class="hero__msg"><b>' + esc(name) + "</b>님에게 지금 가장 필요한 건<br><b>" + P.ko + "(" + P.hz + ")의 기운</b>입니다. " + P.short + ".</p>" +
       '<ul class="tags">' + P.tags.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul></section>";
@@ -539,6 +539,21 @@
       html += "</ul>" + (items.length > 2 ? '<div class="swipe-hint" aria-hidden="true"><i style="width:' + (200 / items.length) + '%"></i></div>' : "") + "</section>";
     }
 
+    /* 2. 오행 밸런스 */
+    html += '<section class="panel reveal" aria-labelledby="bal-title"><h2 class="panel__title" id="bal-title">오행 밸런스</h2><ul class="bal">';
+    var maxPct = Math.max.apply(null, D.ORDER.map(function (k) { return r.pct[k]; })) || 1;
+    D.ORDER.forEach(function (k) {
+      var e = D.EL[k], isP = k === r.primary;
+      var lv = isP ? (r.count[k] === 0 ? "없음" : "부족") : levelOf(r.pct[k]);
+      html += '<li class="' + (isP ? "is-low" : "") + '" style="--c:' + e.hex + '">' +
+        '<span class="bal__dot" lang="zh-Hant"' + (k === "water" ? ' data-dark' : "") + ">" + e.hz + "</span>" +
+        '<span class="bal__bar" aria-hidden="true"><i style="--w:' + Math.max(3, Math.round(r.pct[k] / maxPct * 100)) + '%"></i></span>' +
+        '<span class="bal__n">' + r.count[k] + "개</span>" +
+        '<span class="bal__lv">' + lv + "</span></li>";
+    });
+    html += '</ul><p class="tip"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 9.4 6.6 14.5 8 9.4 9.4 8 14.5 6.6 9.4 1.5 8 6.6 6.6Z" fill="currentColor"/></svg>' +
+      P.ko + "(" + P.hz + ")의 기운이 채워지면 " + P.benefit + ".</p></section>";
+
     /* 상생 조합: 부족한 기운 + 그 기운을 살리는(낳는) 기운 */
     var giverOf = function (k) { return D.ORDER.filter(function (o) { return D.generates(o) === k; })[0]; };
     var orbImg = function (el) { return '<img src="' + base + "assets/img/orb-" + el + '.svg" alt="" width="480" height="480" loading="lazy">'; };
@@ -562,21 +577,6 @@
         '<span class="sang__pair"><span class="sr-only">부족한 기운 </span>' + elName(D.EL[k]) + '<i aria-hidden="true">+</i><span class="sr-only">함께 소지할 기운 </span><b>' + elName(D.EL[g]) + "</b></span></li>";
     });
     html += "</ul></section>";
-
-    /* 2. 오행 밸런스 */
-    html += '<section class="panel reveal" aria-labelledby="bal-title"><h2 class="panel__title" id="bal-title">오행 밸런스</h2><ul class="bal">';
-    var maxPct = Math.max.apply(null, D.ORDER.map(function (k) { return r.pct[k]; })) || 1;
-    D.ORDER.forEach(function (k) {
-      var e = D.EL[k], isP = k === r.primary;
-      var lv = isP ? (r.count[k] === 0 ? "없음" : "부족") : levelOf(r.pct[k]);
-      html += '<li class="' + (isP ? "is-low" : "") + '" style="--c:' + e.hex + '">' +
-        '<span class="bal__dot" lang="zh-Hant"' + (k === "water" ? ' data-dark' : "") + ">" + e.hz + "</span>" +
-        '<span class="bal__bar" aria-hidden="true"><i style="--w:' + Math.max(3, Math.round(r.pct[k] / maxPct * 100)) + '%"></i></span>' +
-        '<span class="bal__n">' + r.count[k] + "개</span>" +
-        '<span class="bal__lv">' + lv + "</span></li>";
-    });
-    html += '</ul><p class="tip"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 9.4 6.6 14.5 8 9.4 9.4 8 14.5 6.6 9.4 1.5 8 6.6 6.6Z" fill="currentColor"/></svg>' +
-      P.ko + "(" + P.hz + ")의 기운이 채워지면 " + P.benefit + ".</p></section>";
 
     /* 3. 나와의 관계 */
     var roleKey = r.primary === r.me ? "self" : r.primary === r.roles.parent ? "parent" : r.primary === r.roles.child ? "child" : r.primary === r.roles.wealth ? "wealth" : "officer";
