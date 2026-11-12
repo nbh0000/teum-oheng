@@ -212,8 +212,9 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .orb img {
   width: 100%; height: 100%;
   border-radius: 50%; object-fit: cover;
-  filter: drop-shadow(0 8px 10px rgb(20 20 20 / 0.14));
-  transition: transform 0.4s var(--ease), filter 0.4s var(--ease);
+  /* 그림자는 box-shadow 로: filter drop-shadow 는 전환 도중 네모난 상자가 비쳐 보인다 */
+  box-shadow: 0 8px 12px -2px rgb(20 20 20 / 0.16);
+  transition: transform 0.4s var(--ease), opacity 0.4s var(--ease), filter 0.4s var(--ease), box-shadow 0.4s var(--ease);
 }
 .orb b {
   position: absolute; inset: 0;
@@ -231,7 +232,7 @@ body[data-page="intro"], body[data-page="form"], body[data-page="result"] { back
 .cycle.is-focus .arc, .cycle.is-focus .ray { opacity: 0.1; }
 .cycle.is-focus .arc.on { opacity: 1; stroke-width: 2.8; }
 .cycle.is-focus .ray.on { opacity: 1; stroke-width: 2.4; stroke-dasharray: 6 4; }
-.cycle.is-focus .orb:not(.on) img { filter: grayscale(0.7) opacity(0.5); }
+.cycle.is-focus .orb:not(.on) img { filter: grayscale(0.7); opacity: 0.5; box-shadow: 0 8px 12px -2px rgb(20 20 20 / 0); }
 .cycle .orb.on img { transform: scale(1.04); }
 
 .cycle__legend {

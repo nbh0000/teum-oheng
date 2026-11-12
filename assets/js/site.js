@@ -103,6 +103,22 @@
 
     var caption = $(".cycle__caption");
     var defaultCaption = caption ? caption.innerHTML : "";
+    var pinned = null; // 눌러서 고정한 기운. 구슬 바깥을 누르면 풀린다
+    var shows = {};
+    function clear() {
+      root.classList.remove("is-focus");
+      root.querySelectorAll(".orb").forEach(function (o) { o.classList.remove("on"); o.setAttribute("aria-pressed", "false"); });
+      svg.querySelectorAll(".on").forEach(function (p) { p.classList.remove("on"); });
+      if (caption) caption.innerHTML = defaultCaption;
+    }
+    function restore() { if (pinned) shows[pinned](); else clear(); }
+    document.addEventListener("click", function (ev) {
+      if (!pinned || (ev.target.closest && ev.target.closest(".orb"))) return;
+      pinned = null; clear();
+    });
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape" && pinned) { pinned = null; clear(); }
+    });
 
     D.ORDER.forEach(function (k, i) {
       var e = D.EL[k];
@@ -131,22 +147,21 @@
           caption.innerHTML = "<b>" + e.ko + "</b>은 " + "<b>" + g.ko + "</b>를 살리고, " + "<b>" + c.ko + "</b>를 누릅니다. " + esc(e.short) + ".";
         }
       }
-      function off() {
-        root.classList.remove("is-focus");
-        root.querySelectorAll(".orb").forEach(function (o) { o.classList.remove("on"); });
-        svg.querySelectorAll(".on").forEach(function (p) { p.classList.remove("on"); });
-        if (caption) caption.innerHTML = defaultCaption;
-      }
+      shows[k] = on;
+      b.setAttribute("aria-pressed", "false");
+      // 마우스를 올리면 미리 보여 주고, 벗어나면 고정해 둔 기운(없으면 처음 화면)으로 돌아간다
       b.addEventListener("mouseenter", on);
       b.addEventListener("focus", on);
-      b.addEventListener("mouseleave", off);
-      b.addEventListener("blur", off);
+      b.addEventListener("mouseleave", restore);
+      b.addEventListener("blur", restore);
       b.addEventListener("click", function () {
+        pinned = k;
         if (root.classList.contains("is-focus") && b.classList.contains("on") && matchMedia("(hover: none)").matches) {
           var el = document.getElementById("el-" + k);
           if (el) el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center", inline: "start" });
         }
         on();
+        root.querySelectorAll(".orb").forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
       });
     });
   }
