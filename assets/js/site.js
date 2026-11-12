@@ -615,7 +615,7 @@
       var e = D.EL[k];
       var prod = prods.filter(function (it) { return (it.elements || []).indexOf(k) > -1; })[0];
       var has = prod && /^https?:\/\//.test(prod.url || "");
-      var inner = '<img src="' + base + "assets/img/jar-" + k + '.webp" alt="" width="480" height="480" loading="lazy">' +
+      var inner = '<img src="' + base + "assets/img/orb-" + k + '.svg" alt="" width="480" height="480" loading="lazy">' +
         '<span class="more__t"><small>' + (i + 2) + "순위</small><b>" + e.ko + "(" + e.hz + ") " + (prod ? esc(prod.name) : "기운") + "</b></span>";
       html += '<li style="--c:' + e.hex + '">' + (has ? '<a href="' + esc(prod.url) + '" target="_blank" rel="noopener">' + inner + "</a>" : "<div>" + inner + "</div>") + "</li>";
     });
