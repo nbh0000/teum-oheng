@@ -534,19 +534,30 @@ body[data-page="result"] .r-head { padding: 0 8px; }
 .panel__big { margin: 0 0 14px; font-size: 18px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.35; }
 .panel__text { margin: 14px 0 0; font-size: var(--fs-sm); color: var(--ink-2); }
 .panel__sub { margin: -8px 0 14px; font-size: var(--fs-sm); color: var(--ink-2); }
-/* 부족한 기운 → 함께 소지할 기운 (상생 짝) */
-.pair { width: 100%; border-collapse: separate; border-spacing: 0 2px; margin: 0 0 18px; font-size: var(--fs-sm); table-layout: fixed; }
-.pair th { padding: 0 12px 6px; text-align: left; font-size: var(--fs-xs); font-weight: 400; color: var(--mute); }
-.pair td { padding: 7px 12px; color: var(--mute); }
-.pair td b { font-weight: 500; color: var(--ink-2); }
-.pair__c { display: flex; align-items: center; gap: 10px; }
-.pair img { width: 22px; height: 22px; flex: none; border-radius: 50%; opacity: 0.55; box-shadow: 0 0 0 1px var(--line); }
-.pair .is-me td { padding-block: 11px; background: color-mix(in srgb, var(--c) 20%, var(--paper)); color: var(--ink); font-weight: 600; }
-.pair .is-me td:first-child { border-radius: 3px 0 0 3px; }
-.pair .is-me td:last-child { border-radius: 0 3px 3px 0; }
-.pair .is-me td b { font-weight: 700; color: var(--ink); }
-.pair .is-me img { width: 30px; height: 30px; opacity: 1; box-shadow: 0 3px 6px -1px rgb(20 20 20 / 0.16); }
-.more__label { margin-bottom: 8px; }
+/* 상생 조합: 내 조합은 크게, 나머지 네 조합은 작게 */
+.sang {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 22px 10px 20px; border-radius: 3px; text-align: center;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--c) 20%, var(--paper)), color-mix(in srgb, var(--c2) 20%, var(--paper)));
+}
+.sang__el { display: grid; justify-items: center; min-width: 0; }
+.sang__orb { position: relative; width: clamp(64px, 21vw, 84px); aspect-ratio: 1; margin-bottom: 12px; }
+.sang__orb img { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 8px 12px -2px rgb(20 20 20 / 0.16); }
+.sang__orb b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--hanja); font-weight: 500; font-size: clamp(20px, 6.4vw, 26px); color: #161616; }
+.sang__orb[data-el="water"] b { color: #f4f1ee; }
+.sang__el small { font-size: var(--fs-xs); color: var(--mute); }
+.sang__el strong { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.sang__plus { position: relative; width: 14px; height: 14px; margin-bottom: 44px; }
+.sang__plus::before, .sang__plus::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 1.5px; background: var(--ink); transform: translate(-50%, -50%); }
+.sang__plus::after { transform: translate(-50%, -50%) rotate(90deg); }
+.sang__rest { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sang__rest li { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 9px 10px; border: 1px solid var(--line); border-radius: 3px; font-size: 12.5px; color: var(--mute); }
+.sang__mini { display: flex; flex: none; }
+.sang__mini img { width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 0 0 1.5px var(--paper); }
+.sang__mini img + img { margin-left: -5px; }
+.sang__pair { min-width: 0; white-space: nowrap; }
+.sang__pair i { margin: 0 4px; font-style: normal; color: var(--mute); }
+.sang__pair b { font-weight: 600; color: var(--ink-2); }
 .panel .note { margin-top: 12px; }
 
 .panel--hero { background: linear-gradient(160deg, color-mix(in srgb, var(--c) 22%, var(--paper)) 0%, var(--paper) 62%); }

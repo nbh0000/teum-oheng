@@ -539,30 +539,27 @@
       html += "</ul>" + (items.length > 2 ? '<div class="swipe-hint" aria-hidden="true"><i style="width:' + (200 / items.length) + '%"></i></div>' : "") + "</section>";
     }
 
-    /* 2. 상생의 기운 (함께 채우기) */
-    var rank = D.ORDER.filter(function (k) { return k !== r.primary; })
-      .sort(function (a, b) { return (r.count[a] - r.count[b]) || (r.score[a] - r.score[b]); });
+    /* 상생 조합: 부족한 기운 + 그 기운을 살리는(낳는) 기운 */
+    var giverOf = function (k) { return D.ORDER.filter(function (o) { return D.generates(o) === k; })[0]; };
+    var orbImg = function (el) { return '<img src="' + base + "assets/img/orb-" + el + '.svg" alt="" width="480" height="480" loading="lazy">'; };
+    var elName = function (e) { return e.ko + '(<span lang="zh-Hant">' + e.hz + "</span>)"; };
+    var bigEl = function (k, label) {
+      var e = D.EL[k];
+      return '<div class="sang__el"><span class="sang__orb" data-el="' + k + '">' + orbImg(k) + '<b lang="zh-Hant" aria-hidden="true">' + e.hz + "</b></span>" +
+        "<small>" + label + "</small><strong>" + elName(e) + "</strong></div>";
+    };
+    var G = giverOf(r.primary);
     html += '<section class="panel reveal" aria-labelledby="more-title">' +
       '<h2 class="panel__big" id="more-title">서로를 살리는 상생의 기운</h2>' +
       '<p class="panel__sub">부족한 기운에, 이를 살리는 상생의 기운을 더해보세요.</p>' +
-      '<table class="pair"><thead><tr><th scope="col">부족한 기운</th><th scope="col">함께 소지할 기운</th></tr></thead><tbody>';
+      '<div class="sang" style="--c:' + P.hex + ";--c2:" + D.EL[G].hex + '">' +
+      bigEl(r.primary, "부족한 기운") + '<span class="sang__plus" aria-hidden="true"></span>' + bigEl(G, "함께 소지할 기운") + "</div>" +
+      '<ul class="sang__rest">';
     D.ORDER.forEach(function (k) {
-      // k 를 살리는(낳는) 기운: 수생목, 목생화, 화생토, 토생금, 금생수
-      var src = D.ORDER.filter(function (o) { return D.generates(o) === k; })[0];
-      var a = D.EL[k], b = D.EL[src];
-      var orb = function (el) { return '<img src="' + base + "assets/img/orb-" + el + '.svg" alt="" width="480" height="480" loading="lazy">'; };
-      html += "<tr" + (k === r.primary ? ' class="is-me" style="--c:' + a.hex + '"' : "") + ">" +
-        '<td><span class="pair__c">' + orb(k) + "<span>" + a.ko + '(<span lang="zh-Hant">' + a.hz + "</span>)</span></span></td>" +
-        '<td><span class="pair__c">' + orb(src) + "<b>" + b.ko + '(<span lang="zh-Hant">' + b.hz + "</span>)</b></span></td></tr>";
-    });
-    html += '</tbody></table><p class="panel__for more__label">함께 채우면 좋은 기운</p><ul class="more">';
-    rank.forEach(function (k, i) {
-      var e = D.EL[k];
-      var prod = prods.filter(function (it) { return (it.elements || []).indexOf(k) > -1; })[0];
-      var has = prod && /^https?:\/\//.test(prod.url || "");
-      var inner = '<img src="' + base + "assets/img/orb-" + k + '.svg" alt="" width="480" height="480" loading="lazy">' +
-        '<span class="more__t"><small>' + (i + 2) + "순위</small><b>" + e.ko + "(" + e.hz + ") " + (prod ? esc(prod.name) : "기운") + "</b></span>";
-      html += '<li style="--c:' + e.hex + '">' + (has ? '<a href="' + esc(prod.url) + '" target="_blank" rel="noopener">' + inner + "</a>" : "<div>" + inner + "</div>") + "</li>";
+      if (k === r.primary) return;
+      var g = giverOf(k);
+      html += '<li><span class="sang__mini" aria-hidden="true">' + orbImg(k) + orbImg(g) + "</span>" +
+        '<span class="sang__pair"><span class="sr-only">부족한 기운 </span>' + elName(D.EL[k]) + '<i aria-hidden="true">+</i><span class="sr-only">함께 소지할 기운 </span><b>' + elName(D.EL[g]) + "</b></span></li>";
     });
     html += "</ul></section>";
 
