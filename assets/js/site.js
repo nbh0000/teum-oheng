@@ -513,6 +513,59 @@
       '<p class="hero__msg"><b>' + esc(name) + "</b>님에게 지금 가장 필요한 건<br><b>" + P.ko + "(" + P.hz + ")의 기운</b>입니다. " + P.short + ".</p>" +
       '<ul class="tags">' + P.tags.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul></section>";
 
+    var prods = window.TEUM_PRODUCTS || [];
+    /* 처방 아이템 (오행 밸런스 앞) */
+    var items = prods.filter(function (it) { return (it.elements || []).indexOf(r.primary) > -1; });
+    if (items.length) {
+      var cats = [];
+      items.forEach(function (it) { if (it.category && cats.indexOf(it.category) < 0) cats.push(it.category); });
+      html += '<section class="panel" aria-labelledby="items-title">' +
+        '<p class="panel__for">' + esc(name) + "님을 위한 처방</p>" +
+        '<h2 class="panel__big" id="items-title">' + P.ko + "(" + P.hz + ")의 기운을 채워 줄 " + (NUM_KO[items.length] ? NUM_KO[items.length] + " 가지" : items.length + "가지") + " 아이템</h2>" +
+        '<p class="panel__text" style="margin:0 0 14px">' + (cats.length > 1 ? listKo(cats) + " " : "곁에 두는 물건으로 ") + P.ko + "(" + P.hz + ")의 기운을 가까이 둡니다.</p>" +
+        '<ul class="items' + (items.length === 1 ? " is-one" : "") + '">';
+      items.forEach(function (it) {
+        var has = /^https?:\/\//.test(it.url || "");
+        html += '<li class="item">' +
+          '<div class="item__ph">' + (it.image ? '<img src="' + esc(it.image) + '" alt="' + esc(it.name) + '" loading="lazy" decoding="async">' : "") + "</div>" +
+          '<div class="item__body">' + (it.category ? '<span class="item__cat">' + esc(it.category) + "</span>" : "") +
+          '<h3 class="item__name">' + esc(it.name) + "</h3>" +
+          (it.summary ? '<p class="item__sum">' + esc(it.summary) + "</p>" : "") + "</div>" +
+          (has
+            ? '<a class="item__link" href="' + esc(it.url) + '" target="_blank" rel="noopener">' + esc(it.button || "바로가기") + ARROW + "</a>"
+            : '<span class="item__link" aria-disabled="true">준비 중</span>') +
+          "</li>";
+      });
+      html += "</ul>" + (items.length > 2 ? '<div class="swipe-hint" aria-hidden="true"><i style="width:' + (200 / items.length) + '%"></i></div>' : "") + "</section>";
+    }
+
+    /* 2. 상생의 기운 (함께 채우기) */
+    var rank = D.ORDER.filter(function (k) { return k !== r.primary; })
+      .sort(function (a, b) { return (r.count[a] - r.count[b]) || (r.score[a] - r.score[b]); });
+    html += '<section class="panel reveal" aria-labelledby="more-title">' +
+      '<h2 class="panel__big" id="more-title">서로를 살리는 상생의 기운</h2>' +
+      '<p class="panel__sub">부족한 기운에, 이를 살리는 상생의 기운을 더해보세요.</p>' +
+      '<table class="pair"><thead><tr><th scope="col">부족한 기운</th><th scope="col">함께 소지할 기운</th></tr></thead><tbody>';
+    D.ORDER.forEach(function (k) {
+      // k 를 살리는(낳는) 기운: 수생목, 목생화, 화생토, 토생금, 금생수
+      var src = D.ORDER.filter(function (o) { return D.generates(o) === k; })[0];
+      var a = D.EL[k], b = D.EL[src];
+      var orb = function (el) { return '<img src="' + base + "assets/img/orb-" + el + '.svg" alt="" width="480" height="480" loading="lazy">'; };
+      html += "<tr" + (k === r.primary ? ' class="is-me" style="--c:' + a.hex + '"' : "") + ">" +
+        '<td><span class="pair__c">' + orb(k) + "<span>" + a.ko + '(<span lang="zh-Hant">' + a.hz + "</span>)</span></span></td>" +
+        '<td><span class="pair__c">' + orb(src) + "<b>" + b.ko + '(<span lang="zh-Hant">' + b.hz + "</span>)</b></span></td></tr>";
+    });
+    html += '</tbody></table><p class="panel__for more__label">함께 채우면 좋은 기운</p><ul class="more">';
+    rank.forEach(function (k, i) {
+      var e = D.EL[k];
+      var prod = prods.filter(function (it) { return (it.elements || []).indexOf(k) > -1; })[0];
+      var has = prod && /^https?:\/\//.test(prod.url || "");
+      var inner = '<img src="' + base + "assets/img/orb-" + k + '.svg" alt="" width="480" height="480" loading="lazy">' +
+        '<span class="more__t"><small>' + (i + 2) + "순위</small><b>" + e.ko + "(" + e.hz + ") " + (prod ? esc(prod.name) : "기운") + "</b></span>";
+      html += '<li style="--c:' + e.hex + '">' + (has ? '<a href="' + esc(prod.url) + '" target="_blank" rel="noopener">' + inner + "</a>" : "<div>" + inner + "</div>") + "</li>";
+    });
+    html += "</ul></section>";
+
     /* 2. 오행 밸런스 */
     html += '<section class="panel reveal" aria-labelledby="bal-title"><h2 class="panel__title" id="bal-title">오행 밸런스</h2><ul class="bal">';
     var maxPct = Math.max.apply(null, D.ORDER.map(function (k) { return r.pct[k]; })) || 1;
@@ -567,32 +620,6 @@
       (r.low.length > 1 ? '<p class="note">' + r.low.slice(1).map(label).join(", ") + "도 함께 부족합니다. 아래 '다른 오행 함께 채우기'에서 볼 수 있습니다.</p>" : "") +
       "</section>";
 
-    /* 6. 처방 아이템 */
-    var prods = window.TEUM_PRODUCTS || [];
-    var items = prods.filter(function (it) { return (it.elements || []).indexOf(r.primary) > -1; });
-    if (items.length) {
-      var cats = [];
-      items.forEach(function (it) { if (it.category && cats.indexOf(it.category) < 0) cats.push(it.category); });
-      html += '<section class="panel" aria-labelledby="items-title">' +
-        '<p class="panel__for">' + esc(name) + "님을 위한 처방</p>" +
-        '<h2 class="panel__big" id="items-title">' + P.ko + "(" + P.hz + ")의 기운을 채워 줄 " + (NUM_KO[items.length] ? NUM_KO[items.length] + " 가지" : items.length + "가지") + " 아이템</h2>" +
-        '<p class="panel__text" style="margin:0 0 14px">' + (cats.length > 1 ? listKo(cats) + " " : "곁에 두는 물건으로 ") + P.ko + "(" + P.hz + ")의 기운을 가까이 둡니다.</p>" +
-        '<ul class="items' + (items.length === 1 ? " is-one" : "") + '">';
-      items.forEach(function (it) {
-        var has = /^https?:\/\//.test(it.url || "");
-        html += '<li class="item">' +
-          '<div class="item__ph">' + (it.image ? '<img src="' + esc(it.image) + '" alt="' + esc(it.name) + '" loading="lazy" decoding="async">' : "") + "</div>" +
-          '<div class="item__body">' + (it.category ? '<span class="item__cat">' + esc(it.category) + "</span>" : "") +
-          '<h3 class="item__name">' + esc(it.name) + "</h3>" +
-          (it.summary ? '<p class="item__sum">' + esc(it.summary) + "</p>" : "") + "</div>" +
-          (has
-            ? '<a class="item__link" href="' + esc(it.url) + '" target="_blank" rel="noopener">' + esc(it.button || "바로가기") + ARROW + "</a>"
-            : '<span class="item__link" aria-disabled="true">준비 중</span>') +
-          "</li>";
-      });
-      html += "</ul>" + (items.length > 2 ? '<div class="swipe-hint" aria-hidden="true"><i style="width:' + (200 / items.length) + '%"></i></div>' : "") + "</section>";
-    }
-
     /* 7. 전문가 분석 */
     var ex = (window.TEUM_EXPERT || {})[r.primary];
     if (ex && ex.sections && ex.sections.length) {
@@ -605,21 +632,6 @@
       });
       html += "</div></section>";
     }
-
-    /* 8. 다른 오행 함께 채우기 */
-    var rank = D.ORDER.filter(function (k) { return k !== r.primary; })
-      .sort(function (a, b) { return (r.count[a] - r.count[b]) || (r.score[a] - r.score[b]); });
-    html += '<section class="panel" aria-labelledby="more-title"><p class="panel__for">함께 채우면 좋은 기운</p>' +
-      '<h2 class="panel__big" id="more-title">다른 오행 함께 채우기</h2><ul class="more">';
-    rank.forEach(function (k, i) {
-      var e = D.EL[k];
-      var prod = prods.filter(function (it) { return (it.elements || []).indexOf(k) > -1; })[0];
-      var has = prod && /^https?:\/\//.test(prod.url || "");
-      var inner = '<img src="' + base + "assets/img/orb-" + k + '.svg" alt="" width="480" height="480" loading="lazy">' +
-        '<span class="more__t"><small>' + (i + 2) + "순위</small><b>" + e.ko + "(" + e.hz + ") " + (prod ? esc(prod.name) : "기운") + "</b></span>";
-      html += '<li style="--c:' + e.hex + '">' + (has ? '<a href="' + esc(prod.url) + '" target="_blank" rel="noopener">' + inner + "</a>" : "<div>" + inner + "</div>") + "</li>";
-    });
-    html += "</ul></section>";
 
     html += '<p class="disclaimer">전통 명리학의 오행 계산을 바탕으로 한 참고용 결과입니다. 입력한 정보는 이 화면에서만 계산되며 저장되지 않습니다.' +
       (r.known ? "" : " 태어난 시간을 알면 두 글자가 더해져 결과가 달라질 수 있습니다.") + "</p>";

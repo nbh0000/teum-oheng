@@ -533,6 +533,20 @@ body[data-page="result"] .r-head { padding: 0 8px; }
 .panel__for { margin: 0 0 2px; font-size: var(--fs-xs); color: var(--mute); }
 .panel__big { margin: 0 0 14px; font-size: 18px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.35; }
 .panel__text { margin: 14px 0 0; font-size: var(--fs-sm); color: var(--ink-2); }
+.panel__sub { margin: -8px 0 14px; font-size: var(--fs-sm); color: var(--ink-2); }
+/* 부족한 기운 → 함께 소지할 기운 (상생 짝) */
+.pair { width: 100%; border-collapse: separate; border-spacing: 0 2px; margin: 0 0 18px; font-size: var(--fs-sm); table-layout: fixed; }
+.pair th { padding: 0 12px 6px; text-align: left; font-size: var(--fs-xs); font-weight: 400; color: var(--mute); }
+.pair td { padding: 7px 12px; color: var(--mute); }
+.pair td b { font-weight: 500; color: var(--ink-2); }
+.pair__c { display: flex; align-items: center; gap: 10px; }
+.pair img { width: 22px; height: 22px; flex: none; border-radius: 50%; opacity: 0.55; box-shadow: 0 0 0 1px var(--line); }
+.pair .is-me td { padding-block: 11px; background: color-mix(in srgb, var(--c) 20%, var(--paper)); color: var(--ink); font-weight: 600; }
+.pair .is-me td:first-child { border-radius: 3px 0 0 3px; }
+.pair .is-me td:last-child { border-radius: 0 3px 3px 0; }
+.pair .is-me td b { font-weight: 700; color: var(--ink); }
+.pair .is-me img { width: 30px; height: 30px; opacity: 1; box-shadow: 0 3px 6px -1px rgb(20 20 20 / 0.16); }
+.more__label { margin-bottom: 8px; }
 .panel .note { margin-top: 12px; }
 
 .panel--hero { background: linear-gradient(160deg, color-mix(in srgb, var(--c) 22%, var(--paper)) 0%, var(--paper) 62%); }
