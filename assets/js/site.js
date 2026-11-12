@@ -114,7 +114,7 @@
       b.style.top = (pos[k].y / 6) + "%";
       b.style.animationDelay = (reduce ? 0 : 0.1 + i * 0.1) + "s";
       b.setAttribute("aria-label", e.ko + "(" + e.hz + "): " + e.short);
-      b.innerHTML = '<img src="' + (document.body.getAttribute("data-base") || "") + 'assets/img/jar-' + k + '.webp" alt="" width="480" height="480" decoding="async">' +
+      b.innerHTML = '<img src="' + (document.body.getAttribute("data-base") || "") + 'assets/img/orb-' + k + '.webp" alt="" width="480" height="480" decoding="async">' +
         "<b>" + e.hz + '</b><span class="nm">' + e.ko + "</span>";
       root.appendChild(b);
 
